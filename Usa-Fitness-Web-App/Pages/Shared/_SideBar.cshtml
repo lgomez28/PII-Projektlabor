@@ -1,0 +1,31 @@
+﻿<div class="sidebar">
+    <nav class="sidebar-nav">
+        <ul class="nav">
+@if (User.Identity.IsAuthenticated){
+
+            <li class="nav-title">Fitness-Seiten</li>
+            <li class="nav-item">
+                <a class="nav-link" href="/index">
+                    <i class="nav-icon icon-speedometer"></i> Workout-Tagebuch
+
+                </a>
+            </li>
+           
+            <li class="nav-item">
+                <a class="nav-link" href="/AddFitness">
+                    <i class="nav-icon icon-chart"></i> BMI-Rechner
+                </a>
+            </li>
+            <li class="nav-title">Nutzerinformation</li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="/privacy">
+                    <i class="nav-icon icon-ghost"></i> Profil
+                </a>
+            </li>
+        
+             }
+        </ul>
+    </nav>
+    <button class="sidebar-minimizer brand-minimizer" type="button"></button>
+</div>

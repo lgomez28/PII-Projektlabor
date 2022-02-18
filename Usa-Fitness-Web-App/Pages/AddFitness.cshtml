@@ -1,0 +1,221 @@
+@page
+@using newPII.Controllers 
+@model newPII.AddFitnessModels
+@{
+    ViewData["Title"]="Fitness";
+}
+
+<h1><center>BMI-Rechner</center></h1></br></br>
+
+<form method="post">
+  
+    <input type="text" asp-for="Fitness.Gewicht" placeholder="Gewicht" style="text-align: center"/>
+    <input type="text" asp-for="Fitness.Koerpergroesse" placeholder="Körpergröße" style="text-align: center"/>
+    <button type ="submit">Submit</button><br/>
+    <asp:GridView ID="GridView1" runat="server" ></asp:GridView>
+    
+</form>
+
+
+
+<html>
+   <head>
+      <title>line chart with ChartJS</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
+
+      <style id="compiled-css" type="text/css">
+
+.chartWrapper {
+  position: relative;
+}
+
+.chartWrapper > canvas {
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+}
+
+.chartAreaWrapper {
+  width: 1000px;
+  overflow-x: scroll;
+}
+
+
+
+
+    </style>
+        <script type="text/javascript">
+
+      var gewicht = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.setValuesDatabase()[0]));
+      var koerpergroesse = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.setValuesDatabase()[1]));
+      var bmi = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.setValuesDatabase()[2]));
+
+      var timestamp = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.setValuesDatabase()[3]));
+
+        window.onload=function(){
+            $(document).ready(function () {
+        var data = {
+            labels: timestamp,
+            datasets: [
+                {
+                    label: "Gewicht",
+                    fill: false,
+                    borderColor: "rgba(135,206,235,1)",
+                    backgroundColor: "rgba(135,206,235,1)",
+                    pointBackgroundColor: "rgba(135,206,235,1)",
+                    pointBorderColor: "rgba(135,206,235,1)",
+                    pointHoverBackgroundColor: "rgba(135,206,235,1)",
+                    pointHoverBorderColor: "rgba(135,206,235,1)",
+                    data: gewicht
+                },
+                {
+                    label: "Koerpergroesse",
+                    fill: false,
+                    borderColor: "rgba(34,139,34,1)",
+                    backgroundColor: "rgba(34,139,34,1)",
+                    pointBackgroundColor: "rgba(34,139,34,1)",
+                    pointBorderColor: "rgba(34,139,34,1)",
+                    pointHoverBackgroundColor: "rgba(34,139,34,1)",
+                    pointHoverBorderColor: "rgba(34,139,34,1)",
+                    data: koerpergroesse
+                },
+                {
+                    label: "BMI",
+                    fill: false,
+                    borderColor: "rgba(255,64,64,1)",
+                    backgroundColor: "rgba(255,64,64,1)",
+                    pointBackgroundColor: "rgba(255,64,64,1)",
+                    pointBorderColor: "rgba(255,64,64,1)",
+                    pointHoverBackgroundColor: "rgba(255,64,64,1)",
+                    pointHoverBorderColor: "rgba(255,64,64,1)",
+                    data: bmi
+                }
+            ]
+        };
+
+                $(function () {
+                    var rectangleSet = false;
+
+                    var canvasTest = $('#chart-Test');
+                    var chartTest = new Chart(canvasTest, {
+                        type: 'line',
+                        data: data,
+                        maintainAspectRatio: false,
+                        responsive: true,
+                        options: {
+                            tooltips: {
+                                titleFontSize: 0,
+                                titleMarginBottom: 0,
+                                bodyFontSize: 20
+                                
+                            },
+                            
+                            legend: {
+                                display: false
+                            },
+                            scales: {
+                                xAxes: [{
+                                    ticks: {
+                                        fontSize: 12,
+                                        display: true
+                                    }
+                                }],
+                                yAxes: [{
+                                    ticks: {
+                                        fontSize: 22,
+                                        beginAtZero: true
+                                    }
+                                }]
+                            },
+                            animation: {
+                                onComplete: function () {
+                                    if (!rectangleSet) {
+                                        var scale = window.devicePixelRatio;
+
+                                        var sourceCanvas = chartTest.chart.canvas;
+                                        var copyWidth = chartTest.scales['y-axis-0'].width - 10;
+                                        var copyHeight = chartTest.scales['y-axis-0'].height + chartTest.scales['y-axis-0'].top + 10;
+
+                                        var targetCtx = document.getElementById("axis-Test").getContext("2d");
+
+                                        targetCtx.scale(scale, scale);
+                                        targetCtx.canvas.width = copyWidth * scale;
+                                        targetCtx.canvas.height = copyHeight * scale;
+
+                                        targetCtx.canvas.style.width = `${copyWidth}px`;
+                                        targetCtx.canvas.style.height = `${copyHeight}px`;
+                                        targetCtx.drawImage(sourceCanvas, 0, 0, copyWidth * scale, copyHeight * scale, 0, 0, copyWidth * scale, copyHeight * scale);
+
+                                        var sourceCtx = sourceCanvas.getContext('2d');
+
+                                        // Normalize coordinate system to use css pixels.
+
+                                        sourceCtx.clearRect(0, 0, copyWidth * scale, copyHeight * scale);
+                                        rectangleSet = true;
+                                    }
+                                },
+                                onProgress: function () {
+                                    if (rectangleSet === true) {
+                                        var copyWidth = chartTest.scales['y-axis-0'].width;
+                                        var copyHeight = chartTest.scales['y-axis-0'].height + chartTest.scales['y-axis-0'].top + 10;
+
+                                        var sourceCtx = chartTest.chart.canvas.getContext('2d');
+                                        sourceCtx.clearRect(0, 0, copyWidth, copyHeight);
+                                    }
+                                }
+                            }
+                        }
+                    });
+                    var newwidth = $('.chartAreaWrapper2').width() + 1500;
+                    $('.chartAreaWrapper2').width(newwidth);
+                });
+            });
+        }
+
+      </script>
+   </head>
+
+</html>
+
+
+
+                          <div class="card-footer">
+                <div class="row text-center">
+                    <div class="col-sm-12 col-md mb-sm-2 mb-0">
+                        <strong>Körpergröße</strong>
+                        <div class="progress progress-xs mt-2">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md mb-sm-2 mb-0">
+                        <strong>Gewicht</strong>
+                        <div class="progress progress-xs mt-2">
+                            <div class="progress-bar bg-info" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-sm-12 col-md mb-sm-2 mb-0">
+                        <strong>BMI</strong>
+                        <div class="progress progress-xs mt-2">
+                            <div class="progress-bar bg-danger" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+<body> 
+                        <div class="chartWrapper">
+                        <div class="chartAreaWrapper">
+                        <div class="chartAreaWrapper2">
+                            <canvas id="chart-Test" height="300" width="1800"></canvas>
+                        </div>
+                        </div>
+                        <canvas id="axis-Test" height="300" width="0"></canvas>
+                        </div>
+</body>
+
+}
+
+

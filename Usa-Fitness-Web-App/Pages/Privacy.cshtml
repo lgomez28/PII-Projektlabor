@@ -1,0 +1,45 @@
+
+@page
+@using System.Security.Claims
+@model PrivacyModel
+@using Microsoft.Identity.Web
+@{
+    ViewData["Title"] = "JSON Web Token";
+}
+<h1>@ViewData["Title"]</h1>
+
+@if(User.Identity.IsAuthenticated)
+{
+    <ul class="nav navbar-nav navbar-right">
+        <li class="navbar-text">Hello @User.GetDisplayName()!</li>
+        @* <li><a asp-area="AzureADB2C" asp-controller="Account" asp-action="SignOut">Sign out</a></li> *@
+        <table class="table-hover table-condensed table-striped">
+	        <tr>
+		        <th>Claim Type</th>
+		        <th>Claim Value</th>
+	        </tr>
+
+            @foreach (Claim claim in User.Claims)
+            {
+                <tr>
+                    <td>@claim.Type</td>
+                    <td>@claim.Value</td>
+                </tr>
+               
+            }
+        
+        </table>
+        <li class="navbar-text">ID: @User.FindFirstValue(ClaimTypes.NameIdentifier)</li>
+        <li class="navbar-text">Country: @User.FindFirstValue("country")</li>
+
+    </ul>
+
+   
+}
+else
+{
+    <ul class="nav navbar-nav navbar-right">
+        <li><a asp-area="AzureADB2C" asp-controller="Account" asp-action="SignIn">Sign in</a></li>
+    </ul>
+}    
+
