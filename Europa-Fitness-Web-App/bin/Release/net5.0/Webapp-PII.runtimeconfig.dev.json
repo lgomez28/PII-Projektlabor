@@ -1,0 +1,8 @@
+{
+  "runtimeOptions": {
+    "additionalProbingPaths": [
+      "C:\\Users\\larae\\.dotnet\\store\\|arch|\\|tfm|",
+      "C:\\Users\\larae\\.nuget\\packages"
+    ]
+  }
+}

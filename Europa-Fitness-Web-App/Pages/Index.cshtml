@@ -1,0 +1,211 @@
+﻿@page
+@model newPII.IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+ @if (User.Identity.IsAuthenticated){
+ @*var jsArray= @Html.Raw(Json.Serialize(ViewBag.ArrayValue)); *@
+
+<h1><center>Workout-Tagebuch</center></h1><br/><br/>
+<form method="post">
+    <input type="text" asp-for="Workout.Uebung" placeholder="Übung" style="text-align: center"/>
+    <input type="text" asp-for="Workout.Count" placeholder="Anzahl/Dauer in Sekunden" style="text-align: center"/>
+    <button type ="submit">Submit</button><br/><br/>
+    <asp:GridView ID="GridView1" runat="server" ></asp:GridView>
+ </form>
+
+
+
+
+<html>
+   <head>
+      <title>line chart with ChartJS</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
+
+      <style id="compiled-css" type="text/css">
+
+.chartWrapper {
+  position: relative;
+}
+
+.chartWrapper > canvas {
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+}
+
+.chartAreaWrapper {
+  width: 1200px;
+  overflow-x: scroll;
+}
+
+
+
+
+    </style>
+        <script type="text/javascript">
+
+        var timestamp = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.get_timestamp()));
+        var dict= @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.setValuesDatabase()));
+
+        window.onload=function(){
+            $(document).ready(function () {
+                var colorlist1=["rgba(4,120,0,0.5)","rgba(99,70,118,0.5)","rgba(99,183,199,0.5)","rgba(194,120,52,0.5)","rgba(69,120,154,0.5)","rgba(225,245,73,0.5)","rgba(225,111,142,0.5)","rgba(108,75,234,0.5)","rgba(99,184,255,0.5)","rgba(135,206,235,0.5)","rgba(255,64,64,0.5)","rgba(255,64,64,0.5)","rgba(255,64,64,0.5)","rgba(255,64,64,0.5)"];
+                var colorlist2=["rgba(4,120,0,1)","rgba(99,70,118,1)","rgba(99,183,199,1)","rgba(194,120,52)","rgba(69,120,154,1)","rgba(225,245,73,1)","rgba(225,111,142,1)","rgba(108,75,234,1)","rgba(99,184,255,1)","rgba(135,206,235,1)","rgba(255,64,64,1)","rgba(255,64,64,1)","rgba(255,64,64,1)","rgba(255,64,64,1)"];
+                var idx=0;
+                var jsonfile = {
+                    labels: timestamp,
+                    datasets: []
+                    };
+                for(var key in dict){
+                    var data_json= {
+                        label: key,
+                        backgroundColor: 'rgba(135,206,235,1)',
+                        borderWidth: 1,
+                        fillColor: "rgba(135,206,235,0.2)",     //"rgba(" + r + "," + g + "," + b + "," + a1 + ")",
+                        strokeColor: "rgba(135,206,235,1)",
+                        pointColor: "rgba(135,206,235,1)",
+                        pointStrokeColor: "#fff",
+                        pointHighlightFill: "#fff",
+                        pointHighlightStroke: "rgba(99,184,255,1)",
+                        data: dict[key]
+                        };
+                    data_json.fillColor=colorlist1[idx];
+                    data_json.strokeColor=colorlist2[idx];
+                    data_json.pointColor=colorlist2[idx];
+                    data_json.pointHighlightStroke=colorlist2[idx];
+                    data_json.backgroundColor=colorlist2[idx];
+                    jsonfile.datasets.push(data_json);
+                    idx+=1;
+                };
+                idx=0;
+                var chartData= jsonfile;
+
+                $(function () {
+                    var rectangleSet = false;
+
+                    var canvasTest = $('#chart-Test');
+                    var chartTest = new Chart(canvasTest, {
+                        type: 'bar',
+                        data: chartData,
+                        maintainAspectRatio: false,
+                        responsive: true,
+                        options: {
+                            tooltips: {
+                                titleFontSize: 0,
+                                titleMarginBottom: 0,
+                                bodyFontSize: 20
+                            },
+                            legend: {
+                                display: true
+                            },
+                            scales: {
+                                xAxes: [{
+                                    maxBarThickness: 500,
+
+                                    ticks: {
+                                        fontSize: 12,
+                                        display: true
+                                    }
+                                }],
+                                yAxes: [{
+                                    ticks: {
+                                        fontSize: 15,
+                                        beginAtZero: true
+                                    }
+                                }]
+                            },
+                            animation: {
+                                onComplete: function () {
+                                    if (!rectangleSet) {
+                                        var scale = window.devicePixelRatio;
+
+                                        var sourceCanvas = chartTest.chart.canvas;
+                                        var copyWidth = chartTest.scales['y-axis-0'].width - 10;
+                                        var copyHeight = chartTest.scales['y-axis-0'].height + chartTest.scales['y-axis-0'].top + 10;
+
+                                        var targetCtx = document.getElementById("axis-Test").getContext("2d");
+
+                                        targetCtx.scale(scale, scale);
+                                        targetCtx.canvas.width = copyWidth * scale;
+                                        targetCtx.canvas.height = copyHeight * scale;
+
+                                        targetCtx.canvas.style.width = `${copyWidth}px`;
+                                        targetCtx.canvas.style.height = `${copyHeight}px`;
+                                        targetCtx.drawImage(sourceCanvas, 0, 0, copyWidth * scale, copyHeight * scale, 0, 0, copyWidth * scale, copyHeight * scale);
+
+                                        var sourceCtx = sourceCanvas.getContext('2d');
+
+                                        // Normalize coordinate system to use css pixels.
+
+                                        sourceCtx.clearRect(0, 0, copyWidth * scale, copyHeight * scale);
+                                        rectangleSet = true;
+                                    }
+                                },
+                                onProgress: function () {
+                                    if (rectangleSet === true) {
+                                        var copyWidth = chartTest.scales['y-axis-0'].width;
+                                        var copyHeight = chartTest.scales['y-axis-0'].height + chartTest.scales['y-axis-0'].top + 10;
+
+                                        var sourceCtx = chartTest.chart.canvas.getContext('2d');
+                                        sourceCtx.clearRect(0, 0, copyWidth, copyHeight);
+                                    }
+                                }
+                            }
+                        }
+                    });
+                    var newwidth = $('.chartAreaWrapper2').width() + 1500;
+                    $('.chartAreaWrapper2').width(newwidth);
+                });
+            });
+        }
+
+      </script>
+   </head>
+
+</html>
+
+
+<div class="container-fluid">
+    <div class="animated fadeIn">
+        <div class="row">
+        </div>
+        <!-- /.row-->
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-5">
+                        <h4 class="card-title mb-0">Workout</h4>
+                    </div>
+
+                </div>
+                <!-- /.row-->
+                   <body>
+                        <div class="chartWrapper">
+                        <div class="chartAreaWrapper">
+                        <div class="chartAreaWrapper2">
+                            <canvas id="chart-Test" height="300" width="1800"></canvas>
+                        </div>
+                        </div>
+                        <canvas id="axis-Test" height="300" width="0"></canvas>
+                        </div>
+
+                    </body>
+
+            </div>
+        </div>
+    </div>
+</div>
+}
+
+ @if(User.Identity.IsAuthenticated==false){
+<div class="container-fluid">
+    <div class="animated fadeIn">
+        <h2>Welcome to our Fitness App</h2>
+        <p>Please Sign in to getting started</p>
+
+    </div>
+</div>
+}

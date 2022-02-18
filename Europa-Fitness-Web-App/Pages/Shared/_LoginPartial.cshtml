@@ -1,0 +1,22 @@
+﻿@using System.Security.Principal
+@if (User.Identity.IsAuthenticated)
+{
+    <ul class="nav navbar-nav navbar-right px-3">
+        <li class="navbar-text  px-3">Hallo @User.Identity.Name</li>
+        <li class="navbar-btn">
+            <form method="get" asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignOut">
+                <button type="submit" class="btn btn-primary">Sign Out</button>
+            </form>
+        </li>
+    </ul>
+}
+else
+{
+    <ul class="nav navbar-nav navbar-right px-3">
+        <li class="navbar-btn">
+            <form method="get" asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignIn">
+                <button type="submit" class="btn btn-primary">Sign In</button>
+            </form>
+        </li>
+    </ul>
+}
